@@ -1,11 +1,23 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { PrismaModule } from './prisma/prisma.module';
+import { CommentaryModule } from './commentary/commentary.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { FavoriModule } from './favori/favori.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    MongooseModule.forRoot(process.env.DATABASE_MONGODB_URL, {
+      dbName: 'LeBonPetitPlat',
+    }),
+    PrismaModule,
+    CommentaryModule,
+    FavoriModule,
+    UserModule,
   ],
 })
 export class AppModule {}

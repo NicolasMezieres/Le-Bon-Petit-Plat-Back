@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/client2"
+}
+
+datasource mongoDB {
+  provider = "mongodb"
+  url      = env("DATABASE_MONGODB_URL")
+}
+
+model Recipe_has_Commentary {
+  id        String @id @default(auto()) @map("_id") @mongoDB.ObjectId
+  idUser    String
+  idRecipe  String
+  note      Int
+  text      String
+  isVisible Boolean @default(true)
+}
