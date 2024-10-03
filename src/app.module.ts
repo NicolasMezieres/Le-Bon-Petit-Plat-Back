@@ -5,6 +5,7 @@ import { CommentaryModule } from './commentary/commentary.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { FavoriModule } from './favori/favori.module';
 import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from './user/user.module';
     CommentaryModule,
     FavoriModule,
     UserModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
