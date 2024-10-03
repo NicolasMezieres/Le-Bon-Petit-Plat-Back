@@ -10,7 +10,7 @@ datasource postgresqlDB {
 model Role {
   id   String @id @default(uuid())
   name String @unique
-  // user User[]
+  user User[]
 }
 
 model User {
@@ -27,7 +27,7 @@ model User {
   createdAt      DateTime @default(now())
   gdpr           DateTime 
   updatedAt      DateTime @updatedAt
-  // role           Role     @relation(fields: [idRole], references: [id])
+  role           Role     @relation(fields: [idRole], references: [id])
 }
 
 model Recipe {
