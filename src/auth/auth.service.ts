@@ -100,7 +100,7 @@ export class AuthService {
         return await this.signToken(
           existingUsername.id,
           existingUsername.role.name,
-          '1d',
+          '1h',
         );
       }
     }
@@ -166,7 +166,15 @@ export class AuthService {
     return 'Email envoyé';
   }
   async resetPassword(dto: resetPasswordDTO, user: User) {
-    console.log(user);
-    return user;
+    const newPassword = await argon.hash(dto.password);
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
+    return 'Change password !';
   }
 }

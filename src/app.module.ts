@@ -7,6 +7,9 @@ import { FavoriModule } from './favori/favori.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
+import { RecipeModule } from './recipe/recipe.module';
+import { CategoryModule } from './category/category.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -16,12 +19,15 @@ import { EmailModule } from './email/email.module';
     MongooseModule.forRoot(process.env.DATABASE_MONGODB_URL, {
       dbName: 'LeBonPetitPlat',
     }),
-    PrismaModule,
+    PrismaModule, 
     CommentaryModule,
     FavoriModule,
     UserModule,
     AuthModule,
     EmailModule,
+    RecipeModule,
+    CategoryModule,
+    ImageModule,
   ],
 })
 export class AppModule {}

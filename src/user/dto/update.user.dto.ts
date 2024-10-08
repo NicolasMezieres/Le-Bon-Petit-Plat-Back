@@ -1,36 +1,29 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  IsStrongPassword,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsStrongPassword, MaxLength, MinLength } from 'class-validator';
 
-export class signupDTO {
+export class updateUserDTO {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(50)
   firstName: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(50)
   lastName: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @IsEmail()
   @MaxLength(320)
   email: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(50)
   username: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @IsStrongPassword()
   @MinLength(8)
   @MaxLength(50)
