@@ -5,6 +5,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -32,6 +33,10 @@ export class AuthController {
     return this.authService.signin(dto);
   }
 
+  @Get('/isUsed')
+  isExistingIdentifier(@Query() query: string) {
+    return this.authService.isExistingIdentifier(query);
+  }
   @Get('/activate/:token')
   activateAccount(@Param('token') token: string) {
     return this.authService.activateAccount(token);

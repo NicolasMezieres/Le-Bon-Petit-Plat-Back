@@ -184,4 +184,31 @@ export class AuthService {
     });
     return 'Change password !';
   }
+  async isExistingIdentifier(query: any) {
+    const isExistingIdentifier = await this.prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            username: query.identifier,
+          },
+          {
+            email: query.identifier,
+          },
+        ],
+      },
+    });
+    if (
+      isExistingIdentifier &&
+      isExistingIdentifier.email === query.identifier
+    ) {
+      throw new ForbiddenException('Email already taken');
+    } else if (
+      isExistingIdentifier &&
+      isExistingIdentifier.username === query.identifier
+    ) {
+      throw new ForbiddenException('Username already taken');
+    } else {
+      return 'identifier valide';
+    }
+  }
 }
