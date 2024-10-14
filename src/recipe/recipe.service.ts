@@ -23,22 +23,23 @@ export class RecipeService {
   ) {}
   //TODO mettre une limite offset PARTOUT (même en dehors de la ressource)
   async findAll(query: any) {
-    const skip = pagination(query.page, 12);
+    const take = 12;
+    const skip = pagination(query.page, take);
     console.log(skip);
-    const data = await this.prisma.recipe.findMany({
+    return await this.prisma.recipe.findMany({
       skip: skip,
-      take: 12,
+      take: take,
       where: {
         isVisible: true,
       },
     });
-    return { data: data, count: data.length };
   }
   async findByUser(user: User, query: any) {
-    const skip = pagination(query.page, 12);
+    const take = 12;
+    const skip = pagination(query.page, take);
     return await this.prisma.recipe.findMany({
       skip: skip,
-      take: 12,
+      take: take,
       where: {
         AND: [{ isVisible: true }, { idUser: user.id }],
       },
@@ -61,11 +62,12 @@ export class RecipeService {
     });
   }
   async search(query: searchDTO) {
-    const skip = pagination(query.page, 12);
+    const take = 12;
+    const skip = pagination(query.page, take);
     const search = query.search.split('_');
     return await this.prisma.recipe.findMany({
       skip: skip,
-      take: 12,
+      take: take,
       where: {
         idCategory: query.idCategory,
 
