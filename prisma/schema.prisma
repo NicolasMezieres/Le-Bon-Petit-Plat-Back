@@ -28,23 +28,39 @@ model User {
   gdpr           DateTime 
   updatedAt      DateTime @updatedAt
   role           Role     @relation(fields: [idRole], references: [id])
+  recipe         Recipe[]
 }
 
 model Recipe {
   id              String   @id @default(uuid())
   idUser          String
-  title           String
+  title           String   @unique
   picture         String
   idCategory      String
   piece           Int
   preparationTime String
   cookingTime     String?
   standingTime    String?
-  difficulty      String
-  ingredient      String[]
-  cookingStep     String[]
+  difficulty      Int
+  ingredient      Ingredient[]
+  cookingStep     Json[] 
+  note            Decimal  @default(0)
+  sumNote         Int      @default(0)
+  numberNote      Int      @default(0)
   isVisible       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
   category        Category @relation(fields: [idCategory], references: [id])
+  user            User     @relation(fields: [idUser], references:[id])
+}
+
+model Ingredient{
+  id          String   @id @default(uuid())
+  unit        String
+  quantity    Float
+  ingredient  String
+  idRecipe    String
+  recipe  Recipe @relation(fields: [idRecipe], references:[id])
 }
 
 model Category {

@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   requestResetPasswordDTO,
   resetPasswordDTO,
@@ -45,8 +49,7 @@ export class AuthService {
       },
     });
     if (!userRole) {
-      console.log("Role User doesn't exist");
-      throw new Error('Error serveur');
+      throw new NotFoundException('Not found role');
     }
     const user = await this.prisma.user.create({
       data: {
@@ -75,7 +78,11 @@ export class AuthService {
         role: true,
       },
     });
-    if (!existingEmail && !existingUsername) {
+    if (
+      (!existingEmail && !existingUsername) ||
+      existingEmail?.isActive === false ||
+      existingUsername?.isActive === false
+    ) {
       throw new ForbiddenException('Invalid credentials');
     }
     if (existingEmail) {
@@ -100,7 +107,7 @@ export class AuthService {
         return await this.signToken(
           existingUsername.id,
           existingUsername.role.name,
-          '1h',
+          '1d',
         );
       }
     }

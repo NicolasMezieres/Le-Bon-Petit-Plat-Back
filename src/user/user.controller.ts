@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -20,9 +21,10 @@ import { AdminGuard } from 'src/auth/guards/admin.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AdminGuard)
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(@Query() query: number) {
+    return this.userService.findAll(query);
   }
   @Patch('/update')
   update(@Body() dto: updateUserDTO, @GetUser() user: User) {

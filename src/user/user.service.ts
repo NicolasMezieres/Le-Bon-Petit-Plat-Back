@@ -7,13 +7,18 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { updateByAdminDTO, updateUserDTO } from './dto';
 import { User } from '@prisma/client';
 import * as argon from 'argon2';
+import { pagination } from 'utils/pagination';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
-    return await this.prisma.user.findMany();
+  async findAll(query: any) {
+    const skip = pagination(query.page, 10);
+    return await this.prisma.user.findMany({
+      skip: skip,
+      take: 10,
+    });
   }
   async update(dto: updateUserDTO, user: User) {
     const existingUser = await this.prisma.user.findFirst({

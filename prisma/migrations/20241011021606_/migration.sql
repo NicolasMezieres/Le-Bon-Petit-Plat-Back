@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Recipe" ADD COLUMN     "notes" DECIMAL(65,30) NOT NULL DEFAULT 0;

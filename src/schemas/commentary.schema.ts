@@ -16,5 +16,10 @@ export class Commentary {
 
   @Prop()
   isVisible: boolean;
+
+  @Prop()
+  createdAt: string;
+  @Prop()
+  updatedAt: string;
 }
 export const CommentarySchema = SchemaFactory.createForClass(Commentary);

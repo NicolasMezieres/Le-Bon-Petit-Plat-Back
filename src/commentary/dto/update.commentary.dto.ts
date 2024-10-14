@@ -1,25 +1,23 @@
 import {
-  IsBoolean,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
   Max,
-  max,
   MaxLength,
   Min,
 } from 'class-validator';
 
-export class createCommentaryDTO {
+export class updateCommentaryDTO {
+
   @IsString()
   @IsUUID()
   @IsNotEmpty()
   idRecipe: string;
 
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   @Min(1)
   @Max(5)
   note: number;

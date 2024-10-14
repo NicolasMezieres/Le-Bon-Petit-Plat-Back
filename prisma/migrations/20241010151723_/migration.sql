@@ -36,10 +36,14 @@ CREATE TABLE "Recipe" (
     "preparationTime" TEXT NOT NULL,
     "cookingTime" TEXT,
     "standingTime" TEXT,
-    "difficulty" TEXT NOT NULL,
-    "ingredient" TEXT[],
-    "cookingStep" TEXT[],
+    "difficulty" INTEGER NOT NULL,
+    "ingredient" JSONB[],
+    "cookingStep" JSONB[],
+    "sumNote" INTEGER NOT NULL DEFAULT 0,
+    "numberNote" INTEGER NOT NULL DEFAULT 0,
     "isVisible" BOOLEAN NOT NULL DEFAULT true,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Recipe_pkey" PRIMARY KEY ("id")
 );
@@ -60,6 +64,12 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_username_key" ON "User"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Recipe_title_key" ON "Recipe"("title");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Category_name_key" ON "Category"("name");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_idRole_fkey" FOREIGN KEY ("idRole") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
