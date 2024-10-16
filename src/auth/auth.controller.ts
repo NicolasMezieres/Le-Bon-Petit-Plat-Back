@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -18,6 +19,7 @@ import {
 import { JwtGuard } from './guards/jwt.guard';
 import { GetUser } from './decorator';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -38,8 +40,8 @@ export class AuthController {
     return this.authService.isExistingIdentifier(query);
   }
   @Get('/activate/:token')
-  activateAccount(@Param('token') token: string) {
-    return this.authService.activateAccount(token);
+  activateAccount(@Param('token') token: string, @Res() res:Response) {
+    return this.authService.activateAccount(token, res);
   }
   @Post('/requestResetPassword')
   requestResetPassword(@Body() dto: requestResetPasswordDTO) {

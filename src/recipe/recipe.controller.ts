@@ -17,7 +17,6 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { userJWT } from 'utils/type';
 import { searchDTO } from './dto/search.recipe.dto';
 
-@UseGuards(JwtGuard)
 @Controller('recipe')
 export class RecipeController {
   constructor(private readonly recipeService: RecipeService) {}
@@ -26,32 +25,39 @@ export class RecipeController {
   findAll(@Query() page: string) {
     return this.recipeService.findAll(page);
   }
+  @UseGuards(JwtGuard)
   @Get('/user')
   findByUser(@GetUser() user: User, @Query() page: number) {
     return this.recipeService.findByUser(user, page);
   }
+
   @Get('/bestRated')
   bestRated() {
     return this.recipeService.bestRated();
   }
+
   @Get('/mostRecent')
   mostRecent() {
     return this.recipeService.mostRecent();
   }
+
   @Get('/search')
   search(@Query() query: searchDTO) {
     return this.recipeService.search(query);
   }
+  
   @Get('/:id')
   findById(@Param('id') id: string) {
     return this.recipeService.findById(id);
   }
 
+  @UseGuards(JwtGuard)
   @Post()
   create(@GetUser() user: User, @Body() dto: createRecipeDTO) {
     return this.recipeService.create(user, dto);
   }
 
+  @UseGuards(JwtGuard)
   @Patch('/:id')
   update(
     @Param('id') id: string,
@@ -61,6 +67,7 @@ export class RecipeController {
     return this.recipeService.update(id, dto, user);
   }
 
+  @UseGuards(JwtGuard)
   @Delete('/:id')
   remove(@Param('id') id: string, @GetUser() user: userJWT) {
     return this.recipeService.remove(id, user);

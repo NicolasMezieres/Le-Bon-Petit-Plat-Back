@@ -10,10 +10,7 @@ import { pagination } from 'utils/pagination';
 
 @Injectable()
 export class FavoriService {
-  constructor(
-    @InjectModel('Favori') private favoriModel: Model<Favori>,
-    // @InjectConnection('LeBonPetitPlat') private connection: Connection,
-  ) {}
+  constructor(@InjectModel('Favori') private favoriModel: Model<Favori>) {}
 
   async toggleFavori(dto: favoriDTO, user: userJWT) {
     const existingFavori = await this.favoriModel
@@ -31,7 +28,11 @@ export class FavoriService {
     }
   }
   async findAll(user: User, query: any) {
-    const skip = pagination(query.page, 12)
-    return await this.favoriModel.find({ idUser: user.id }).skip(skip).limit(12).exec();
+    const skip = pagination(query.page, 12);
+    return await this.favoriModel
+      .find({ idUser: user.id })
+      .skip(skip)
+      .limit(12)
+      .exec();
   }
 }

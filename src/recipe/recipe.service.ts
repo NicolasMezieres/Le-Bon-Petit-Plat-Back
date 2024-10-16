@@ -21,11 +21,9 @@ export class RecipeService {
     private prisma: PrismaService,
     @InjectModel('Commentary') private commentaryModel: Model<Commentary>,
   ) {}
-  //TODO mettre une limite offset PARTOUT (même en dehors de la ressource)
   async findAll(query: any) {
     const take = 12;
     const skip = pagination(query.page, take);
-    console.log(skip);
     return await this.prisma.recipe.findMany({
       skip: skip,
       take: take,

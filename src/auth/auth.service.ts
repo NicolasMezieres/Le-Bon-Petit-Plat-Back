@@ -16,6 +16,7 @@ import { EmailService } from 'src/email/email.service';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -131,7 +132,7 @@ export class AuthService {
       access_token: token,
     };
   }
-  async activateAccount(token: string) {
+  async activateAccount(token: string, res: Response) {
     const existingToken = await this.prisma.user.findFirst({
       where: {
         token: token,
@@ -149,7 +150,7 @@ export class AuthService {
         isActive: true,
       },
     });
-    return 'Activation account';
+    return res.redirect("http://localhost:3001/signin");
   }
   async requestResetPassword(dto: requestResetPasswordDTO) {
     const existingEmail = await this.prisma.user.findUnique({

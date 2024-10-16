@@ -11,13 +11,12 @@ import { userJWT } from 'utils/type';
 export class FavoriController {
   constructor(private readonly favoriService: FavoriService) {}
 
+  @Get()
+  findAll(@GetUser() user: User, @Query() page: number) {
+    return this.favoriService.findAll(user, page);
+  }
   @Post()
   toggleFavori(@Body() dto: favoriDTO, @GetUser() user: userJWT) {
     return this.favoriService.toggleFavori(dto, user);
-  }
-
-  @Get()
-  findAll(@GetUser() user: User, @Query() page: number ) {
-    return this.favoriService.findAll(user, page);
   }
 }
