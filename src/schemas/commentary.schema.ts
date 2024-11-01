@@ -22,6 +22,7 @@ export class Commentary {
 
   @Prop()
   createdAt: string;
+
   @Prop()
   updatedAt: string;
 }
