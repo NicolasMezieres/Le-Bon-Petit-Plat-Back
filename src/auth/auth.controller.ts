@@ -16,10 +16,10 @@ import {
   signinDTO,
   signupDTO,
 } from './dto';
-import { JwtGuard } from './guards/jwt.guard';
 import { GetUser } from './decorator';
 import { User } from '@prisma/client';
 import { Response } from 'express';
+import { JwtGuard } from './guards';
 
 @Controller('auth')
 export class AuthController {
@@ -40,7 +40,7 @@ export class AuthController {
     return this.authService.isExistingIdentifier(query);
   }
   @Get('/activate/:token')
-  activateAccount(@Param('token') token: string, @Res() res:Response) {
+  activateAccount(@Param('token') token: string, @Res() res: Response) {
     return this.authService.activateAccount(token, res);
   }
   @Post('/requestResetPassword')

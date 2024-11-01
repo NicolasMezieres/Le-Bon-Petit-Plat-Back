@@ -10,8 +10,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Commentary } from 'src/schemas/commentary.schema';
 import { User } from '@prisma/client';
 import { userJWT } from 'utils/type';
-import { Role } from 'utils/const';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { Role } from 'utils/const';
 
 @Injectable()
 export class CommentaryService {
@@ -39,11 +39,14 @@ export class CommentaryService {
       })
       .exec();
     if (existingCommentary[0]) {
-      throw new ForbiddenException('Commentary already created on this recipe');
+      throw new ForbiddenException(
+        'Vous avez déjà créer un commentaire sur cette recette',
+      );
     }
     const data = {
       ...dto,
       idUser: user.id,
+      username: user.username,
       isVisible: true,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -64,7 +67,7 @@ export class CommentaryService {
         },
       });
     }
-    return 'Commentary created';
+    return { data: 'Commentary created' };
   }
 
   async findAllByRecipe(id: string) {
@@ -121,7 +124,7 @@ export class CommentaryService {
         note: (existingRecipe.sumNote + note) / existingRecipe.numberNote,
       },
     });
-    return 'Successfuly updated';
+    return { data: 'Successfuly updated' };
   }
 
   async remove(id: string, user: userJWT) {
@@ -142,16 +145,21 @@ export class CommentaryService {
     if (!recipe) {
       throw new NotFoundException('Not found recipe');
     }
+
     await this.prisma.recipe.update({
       where: {
         id: commentary.idRecipe,
       },
       data: {
+        numberNote: recipe.numberNote - 1,
         sumNote: { decrement: commentary.note },
-        note: (recipe.sumNote - commentary.note) / (recipe.numberNote - 1),
+        note:
+          recipe.numberNote - 1 === 0
+            ? 0
+            : (recipe.sumNote - commentary.note) / (recipe.numberNote - 1),
       },
     });
     await this.commentaryModel.findByIdAndDelete(id).exec();
-    return 'Successfully deleted';
+    return { data: 'Successfully deleted' };
   }
 }

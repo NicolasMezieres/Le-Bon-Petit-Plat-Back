@@ -28,6 +28,7 @@ export class AuthService {
   ) {}
 
   async signup(dto: signupDTO) {
+    console.log('test');
     const existingUser = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: dto.email }, { username: dto.username }],
@@ -35,10 +36,10 @@ export class AuthService {
     });
     if (existingUser) {
       if (existingUser.email === dto.email) {
-        throw new ForbiddenException('Email already taken');
+        throw new ForbiddenException('Email déjà pris');
       }
       if (existingUser.username === dto.username) {
-        throw new ForbiddenException('Username already taken');
+        throw new ForbiddenException('Email déjà pris');
       }
     }
     const hash = await argon.hash(dto.password);
@@ -50,7 +51,7 @@ export class AuthService {
       },
     });
     if (!userRole) {
-      throw new NotFoundException('Not found role');
+      throw new NotFoundException('Role introuvable');
     }
     const user = await this.prisma.user.create({
       data: {
@@ -62,7 +63,7 @@ export class AuthService {
       },
     });
     await this.emailService.sendUserConfirmation(user, newToken);
-    return 'Compte créer avec succès';
+    return `Vous aller recevoir un mail de confirmation.`;
   }
   async signin(dto: signinDTO) {
     const existingEmail = await this.prisma.user.findUnique({
@@ -81,10 +82,10 @@ export class AuthService {
     });
     if (
       (!existingEmail && !existingUsername) ||
-      existingEmail?.isActive === false ||
-      existingUsername?.isActive === false
+      (existingEmail?.isActive === false && !existingEmail?.token) ||
+      (existingUsername?.isActive === false && !existingUsername?.token)
     ) {
-      throw new ForbiddenException('Invalid credentials');
+      throw new ForbiddenException('Identifiant incorrect');
     }
     if (existingEmail) {
       const isValidPassword = await argon.verify(
@@ -92,6 +93,11 @@ export class AuthService {
         dto.password,
       );
       if (isValidPassword) {
+        if (existingEmail?.isActive === false) {
+          throw new ForbiddenException(
+            "Votre compte n'est pas activé. Veuillez consulter vos emails.",
+          );
+        }
         return await this.signToken(
           existingEmail.id,
           existingEmail.role.name,
@@ -105,6 +111,11 @@ export class AuthService {
         dto.password,
       );
       if (isValidPassword) {
+        if (existingUsername?.isActive === false) {
+          throw new ForbiddenException(
+            "Votre compte n'est pas activé. Veuillez consulter vos emails.",
+          );
+        }
         return await this.signToken(
           existingUsername.id,
           existingUsername.role.name,
@@ -112,13 +123,13 @@ export class AuthService {
         );
       }
     }
-    throw new ForbiddenException('Invalid Credentials');
+    throw new ForbiddenException('Identifiant incorrect');
   }
   async signToken(
     idUser: string,
     nameRole: string,
     time: string,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ access_token: string; message: string }> {
     const payload = {
       sub: idUser,
       role: nameRole,
@@ -130,6 +141,7 @@ export class AuthService {
     });
     return {
       access_token: token,
+      message: 'Connexion réussie',
     };
   }
   async activateAccount(token: string, res: Response) {
@@ -150,28 +162,30 @@ export class AuthService {
         isActive: true,
       },
     });
-    return res.redirect("http://localhost:3001/signin");
+    return res.redirect('http://localhost:3001/signin');
   }
   async requestResetPassword(dto: requestResetPasswordDTO) {
+    console.log(dto);
     const existingEmail = await this.prisma.user.findUnique({
       where: { email: dto.email },
       include: {
         role: true,
       },
     });
-    const jwtToken = await this.signToken(
-      existingEmail.id,
-      existingEmail.role.name,
-      '15m',
-    );
-    // si l'email n'est pas trouver j'envoie quand même le message email envoyé
     if (existingEmail) {
+      const jwtToken = await this.signToken(
+        existingEmail.id,
+        existingEmail.role.name,
+        '15m',
+      );
+      // si l'email n'est pas trouver j'envoie quand même le message email envoyé
+
       await this.emailService.sendResetPassword(
         existingEmail,
         jwtToken.access_token,
       );
     }
-    return 'Email envoyé';
+    return { message: 'Email envoyé' };
   }
   async resetPassword(dto: resetPasswordDTO, user: User) {
     const newPassword = await argon.hash(dto.password);
@@ -183,7 +197,7 @@ export class AuthService {
         password: newPassword,
       },
     });
-    return 'Change password !';
+    return { message: 'Mot de passe modifier !' };
   }
   async isExistingIdentifier(query: any) {
     const isExistingIdentifier = await this.prisma.user.findFirst({
@@ -209,7 +223,7 @@ export class AuthService {
     ) {
       throw new ForbiddenException('Username already taken');
     } else {
-      return 'identifier valide';
+      return { message: 'identifiant valide' };
     }
   }
 }

@@ -26,6 +26,16 @@ export class UserController {
   findAll(@Query() query: number) {
     return this.userService.findAll(query);
   }
+  @UseGuards(AdminGuard)
+  @Get('/search')
+  search(@Query() query: any) {
+    return this.userService.search(query);
+  }
+  @Get('/myInfo')
+  myInfo(@GetUser() user: User) {
+    return this.userService.myInfo(user);
+  }
+
   @Patch('/update')
   update(@Body() dto: updateUserDTO, @GetUser() user: User) {
     return this.userService.update(dto, user);

@@ -2,12 +2,14 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { updateByAdminDTO, updateUserDTO } from './dto';
 import { User } from '@prisma/client';
 import * as argon from 'argon2';
-import { pagination } from 'utils/pagination';
+import { isNextPage, pagination } from 'utils/pagination';
+import { count } from 'console';
 
 @Injectable()
 export class UserService {
@@ -15,10 +17,79 @@ export class UserService {
 
   async findAll(query: any) {
     const skip = pagination(query.page, 10);
-    return await this.prisma.user.findMany({
+    const userList = await this.prisma.user.findMany({
       skip: skip,
       take: 10,
+      select: {
+        createdAt: true,
+        email: true,
+        favoriteRecipe: true,
+        firstName: true,
+        gdpr: true,
+        id: true,
+        isActive: true,
+        lastName: true,
+        updatedAt: true,
+        username: true,
+      },
     });
+    const countUser = await this.prisma.user.count();
+    const nextPage = isNextPage(query.page, countUser, 10);
+    return { data: userList, total: countUser, isNextPage: nextPage };
+  }
+  async search(query: { page: number; search: string }) {
+    const skip = pagination(query.page, 10);
+    const userList = await this.prisma.user.findMany({
+      skip: skip,
+      take: 10,
+      where: {
+        OR: [
+          { firstName: { contains: query.search } },
+          { lastName: { contains: query.search } },
+          { username: { contains: query.search } },
+          { email: { contains: query.search } },
+        ],
+      },
+      select: {
+        createdAt: true,
+        email: true,
+        favoriteRecipe: true,
+        firstName: true,
+        gdpr: true,
+        id: true,
+        isActive: true,
+        lastName: true,
+        updatedAt: true,
+        username: true,
+      },
+    });
+    const countUser = await this.prisma.user.count({
+      where: {
+        OR: [
+          { firstName: { contains: query.search } },
+          { lastName: { contains: query.search } },
+          { username: { contains: query.search } },
+          { email: { contains: query.search } },
+        ],
+      },
+    });
+    const nextPage = isNextPage(query.page, countUser, 10);
+    return { data: userList, total: countUser, isNextPage: nextPage };
+  }
+  async myInfo(user: User) {
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        id: user.id,
+      },
+    });
+    if (existingUser) {
+      delete existingUser.idRole;
+      delete existingUser.password;
+      delete existingUser.isActive;
+      delete existingUser.token;
+      return existingUser;
+    }
+    throw new UnauthorizedException("Vous n'êtes pas autorisé");
   }
   async update(dto: updateUserDTO, user: User) {
     const existingUser = await this.prisma.user.findFirst({
@@ -26,12 +97,21 @@ export class UserService {
         OR: [{ email: dto.email }, { username: dto.username }],
       },
     });
+    console.log(existingUser.username, existingUser.email);
+    console.log(dto.username, dto.email);
+    console.log(user.username, user.email);
     if (existingUser) {
-      if (existingUser.email === dto.email) {
-        throw new ForbiddenException('Email already taken');
+      if (
+        existingUser.email === dto.email &&
+        existingUser.email !== user.email
+      ) {
+        throw new ForbiddenException('Email déjà pris');
       }
-      if (existingUser.username === dto.username) {
-        throw new ForbiddenException('Username already taken');
+      if (
+        existingUser.username === dto.username &&
+        existingUser.username !== user.username
+      ) {
+        throw new ForbiddenException("Nom d'utilisateur déjà pris");
       }
     }
     if (dto.password) {
@@ -45,7 +125,7 @@ export class UserService {
         ...dto,
       },
     });
-    return 'Change successed';
+    return { message: 'Modifications effectuées' };
   }
   async updateByAdmin(user: User, id: string, dto: updateByAdminDTO) {
     const existingUser = await this.prisma.user.findUnique({
@@ -54,7 +134,7 @@ export class UserService {
       },
     });
     if (!existingUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Utilisateur introuvable');
     }
     const existingCredentials = await this.prisma.user.findFirst({
       where: {
@@ -62,11 +142,17 @@ export class UserService {
       },
     });
     if (existingCredentials) {
-      if (existingCredentials.email === dto.email) {
-        throw new ForbiddenException('Email already taken');
+      if (
+        existingCredentials.email === dto.email &&
+        existingUser.email !== existingCredentials.email
+      ) {
+        throw new ForbiddenException('Email déjà pris');
       }
-      if (existingCredentials.username === dto.username) {
-        throw new ForbiddenException('Username already taken');
+      if (
+        existingCredentials.username === dto.username &&
+        existingUser.email !== existingCredentials.email
+      ) {
+        throw new ForbiddenException("Nom d'utilisateur déjà pris");
       }
     }
     if (dto.password) {
@@ -80,7 +166,7 @@ export class UserService {
         ...dto,
       },
     });
-    return 'Change successed';
+    return { message: 'Modification effectué' };
   }
   async remove(id: string) {
     const existingUser = await this.prisma.user.findUnique({
@@ -89,13 +175,13 @@ export class UserService {
       },
     });
     if (!existingUser) {
-      throw new ForbiddenException('User not found');
+      throw new ForbiddenException('Utilisateur introuvable');
     }
     await this.prisma.user.delete({
       where: {
         id: id,
       },
     });
-    return 'Successfull remove';
+    return { message: 'Utilisateur supprimé' };
   }
 }

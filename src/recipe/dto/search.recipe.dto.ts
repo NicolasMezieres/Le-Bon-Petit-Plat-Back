@@ -15,11 +15,11 @@ export class searchDTO {
   @IsOptional()
   search: string;
 
-  @IsUUID()
-  @IsNotEmpty()
-  idCategory: string;
+  @IsString()
+  @IsOptional()
+  nameCategory: string;
 
-  @IsNumberString()
+  @IsString()
   @IsOptional()
   note: string;
 }

@@ -42,7 +42,7 @@ export class EmailService {
     });
   }
   async sendResetPassword(user: User, token: string) {
-    const url = `${process.env.FRONT_URL}/resetPassword/?token=${token}`;
+    const url = `${process.env.FRONT_URL}/resetPassword/${token}`;
     const emailHTML = `<img style="display: block;margin-left: auto;margin-right: auto;" src="cid:Chellil" width="200" height="100"/>
     <p style="text-align: center;font-weight: bolder; font-family:lato;">${user.lastName.charAt(0).toUpperCase() + user.lastName.slice(1)} ${user.firstName}</p>
     <br/>

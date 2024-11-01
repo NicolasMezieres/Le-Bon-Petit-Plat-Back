@@ -10,16 +10,22 @@ import { EmailModule } from './email/email.module';
 import { RecipeModule } from './recipe/recipe.module';
 import { CategoryModule } from './category/category.module';
 import { ImageModule } from './image/image.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '../..', 'uploads'),
+      serveRoot: '/imageFile',
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.DATABASE_MONGODB_URL, {
       dbName: 'LeBonPetitPlat',
     }),
-    PrismaModule, 
+    PrismaModule,
     CommentaryModule,
     FavoriModule,
     UserModule,

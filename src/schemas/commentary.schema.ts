@@ -15,6 +15,9 @@ export class Commentary {
   text: string;
 
   @Prop()
+  username: string;
+
+  @Prop()
   isVisible: boolean;
 
   @Prop()

@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -25,11 +29,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         id: true,
         isActive: true,
         email: true,
+        username: true,
         role: true,
       },
     });
-    if (!user || user.isActive === false) {
-      throw new UnauthorizedException();
+    if (!user) {
+      throw new UnauthorizedException("Vous n'êtes pas autorisé");
+    } else if (user.isActive === false) {
+      throw new ForbiddenException("Votre compte n'es pas actif");
     }
     return user;
   }

@@ -25,11 +25,12 @@ export class JwtAdminStrategy extends PassportStrategy(Strategy, 'admin') {
       select: {
         id: true,
         email: true,
+        username: true,
         role: true,
       },
     });
     if (!user || user.role.name !== Role.ADMIN) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException("Vous n'êtes pas autorisé");
     }
     return user;
   }

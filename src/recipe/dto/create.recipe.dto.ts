@@ -50,11 +50,10 @@ export class createRecipeDTO {
   picture: string;
 
   @IsString()
-  @IsUUID()
   @IsNotEmpty()
-  idCategory: string;
+  nameCategory: string;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   @Min(1)
   @Max(50)

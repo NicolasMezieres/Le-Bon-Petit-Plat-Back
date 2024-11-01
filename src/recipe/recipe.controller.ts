@@ -25,10 +25,17 @@ export class RecipeController {
   findAll(@Query() page: string) {
     return this.recipeService.findAll(page);
   }
+
   @UseGuards(JwtGuard)
   @Get('/user')
-  findByUser(@GetUser() user: User, @Query() page: number) {
-    return this.recipeService.findByUser(user, page);
+  findByUser(@GetUser() user: User, @Query() query: { page: number }) {
+    return this.recipeService.findByUser(user, query);
+  }
+
+  @UseGuards(JwtGuard)
+  @Get('/searchMyRecipes')
+  searchMyRecipes(@GetUser() user: User, @Query() query: any) {
+    return this.recipeService.searchMyRecipes(user, query);
   }
 
   @Get('/bestRated')
@@ -45,7 +52,7 @@ export class RecipeController {
   search(@Query() query: searchDTO) {
     return this.recipeService.search(query);
   }
-  
+
   @Get('/:id')
   findById(@Param('id') id: string) {
     return this.recipeService.findById(id);
