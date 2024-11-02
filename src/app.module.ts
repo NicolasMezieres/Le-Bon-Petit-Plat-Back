@@ -12,9 +12,16 @@ import { CategoryModule } from './category/category.module';
 import { ImageModule } from './image/image.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 20,
+      },
+    ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '../..', 'uploads'),
       serveRoot: '/imageFile',

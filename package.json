@@ -32,6 +32,7 @@
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.6",
     "@nestjs/serve-static": "^4.0.2",
+    "@nestjs/throttler": "^6.2.1",
     "@prisma/client": "^5.20.0",
     "@prisma/studio": "^0.503.0",
     "@types/express": "^5.0.0",
