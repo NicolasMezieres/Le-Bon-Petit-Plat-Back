@@ -1,2 +1,0 @@
--- AddForeignKey
-ALTER TABLE "Recipe" ADD CONSTRAINT "Recipe_idUser_fkey" FOREIGN KEY ("idUser") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

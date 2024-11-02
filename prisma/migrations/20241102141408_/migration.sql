@@ -37,8 +37,8 @@ CREATE TABLE "Recipe" (
     "cookingTime" TEXT,
     "standingTime" TEXT,
     "difficulty" INTEGER NOT NULL,
-    "ingredient" JSONB[],
     "cookingStep" JSONB[],
+    "note" DECIMAL(65,30) NOT NULL DEFAULT 0,
     "sumNote" INTEGER NOT NULL DEFAULT 0,
     "numberNote" INTEGER NOT NULL DEFAULT 0,
     "isVisible" BOOLEAN NOT NULL DEFAULT true,
@@ -46,6 +46,17 @@ CREATE TABLE "Recipe" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Recipe_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Ingredient" (
+    "id" TEXT NOT NULL,
+    "unit" TEXT NOT NULL,
+    "quantity" DOUBLE PRECISION NOT NULL,
+    "ingredient" TEXT NOT NULL,
+    "idRecipe" TEXT NOT NULL,
+
+    CONSTRAINT "Ingredient_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -76,3 +87,9 @@ ALTER TABLE "User" ADD CONSTRAINT "User_idRole_fkey" FOREIGN KEY ("idRole") REFE
 
 -- AddForeignKey
 ALTER TABLE "Recipe" ADD CONSTRAINT "Recipe_idCategory_fkey" FOREIGN KEY ("idCategory") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Recipe" ADD CONSTRAINT "Recipe_idUser_fkey" FOREIGN KEY ("idUser") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Ingredient" ADD CONSTRAINT "Ingredient_idRecipe_fkey" FOREIGN KEY ("idRecipe") REFERENCES "Recipe"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
