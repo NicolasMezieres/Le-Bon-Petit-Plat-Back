@@ -1,4 +1,3 @@
 ```yaml
-web: npm run start:prod
-
+web: npm run build && node dist/src/main.js
 ```

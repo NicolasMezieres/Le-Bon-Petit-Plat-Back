@@ -5,16 +5,18 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [process.env.FRONT_URL];
-      console.log(process.env.FRONT_URL);
-      if (allowedOrigins.includes(origin) || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    // origin: (origin, callback) => {
+    //   console.log(`Received origin: ${origin}`);
+    //   const allowedOrigins = [process.env.FRONT_URL];
+    //   console.log(process.env.FRONT_URL);
+    //   if (allowedOrigins.includes(origin) || !origin) {
+    //     callback(null, true);
+    //   } else {
+    //     callback(new Error('Not allowed by CORS'));
+    //   }
+    // },
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
