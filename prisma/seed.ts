@@ -12,6 +12,34 @@ async function main() {
       name: Role.ADMIN,
     },
   });
+  const petitDejCategory = await prisma.category.create({
+    data: { name: 'Petit-déj' },
+  });
+  const aperitifiCategory = await prisma.category.create({
+    data: {
+      name: 'Apéritif',
+    },
+  });
+  const boissonCategory = await prisma.category.create({
+    data: {
+      name: 'Boisson',
+    },
+  });
+  const entreeCategory = await prisma.category.create({
+    data: {
+      name: 'Entrée',
+    },
+  });
+  const platCategory = await prisma.category.create({
+    data: {
+      name: 'Plat',
+    },
+  });
+  const dessertCategory = await prisma.category.create({
+    data: {
+      name: 'Desser',
+    },
+  });
 }
 
 main()

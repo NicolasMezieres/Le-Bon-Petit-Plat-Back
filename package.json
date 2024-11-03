@@ -10,6 +10,10 @@
   },
   "scripts": {
     "build": "nest build",
+    "copy-package": "cp package.json dist/package.json",
+    "copy-prisma-schema": "cp ./prisma/schema.prisma dist/schema.prisma",
+    "copy-env": "cp .env dist/.env",
+    "build-with-package": "npm run build && npm run copy-package && npm run copy-prisma-schema && npm run copy-env",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -20,7 +24,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.5",
