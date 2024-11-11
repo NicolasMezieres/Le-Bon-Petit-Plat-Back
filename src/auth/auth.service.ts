@@ -162,7 +162,7 @@ export class AuthService {
         isActive: true,
       },
     });
-    return res.redirect('http://localhost:3001/signin');
+    return res.redirect(`${process.env.FRONT_URL}/signin`);
   }
   async requestResetPassword(dto: requestResetPasswordDTO) {
     console.log(dto);
