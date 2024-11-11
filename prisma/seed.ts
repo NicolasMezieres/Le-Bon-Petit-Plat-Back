@@ -37,7 +37,7 @@ async function main() {
   });
   const dessertCategory = await prisma.category.create({
     data: {
-      name: 'Desser',
+      name: 'Dessert',
     },
   });
 }

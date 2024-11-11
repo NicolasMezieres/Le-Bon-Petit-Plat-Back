@@ -10,7 +10,6 @@ import { EmailModule } from './email/email.module';
 import { RecipeModule } from './recipe/recipe.module';
 import { CategoryModule } from './category/category.module';
 import { ImageModule } from './image/image.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ThrottlerModule } from '@nestjs/throttler';
 
@@ -22,10 +21,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
         limit: 20,
       },
     ]),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '../..', 'uploads'),
-      serveRoot: '/imageFile',
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),

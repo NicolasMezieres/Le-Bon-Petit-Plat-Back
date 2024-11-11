@@ -40,14 +40,14 @@ export class ImageController {
     return image.filename;
   }
 
-  // @Get('/view/:filename')
-  // viewImage(@Param('filename') filename: string, @Res() res: Response) {
-  //   const filePath = join(__dirname, '..', '..', '..', 'uploads', filename);
-  //   if (existsSync(filePath)) {
-  //     const fileStream = createReadStream(filePath);
-  //     fileStream.pipe(res);
-  //   } else {
-  //     res.status(404).json({ message: 'Image not found' });
-  //   }
-  // }
+  @Get('/view/:filename')
+  viewImage(@Param('filename') filename: string, @Res() res: Response) {
+    const filePath = join(__dirname, '..', '..', '..', 'uploads', filename);
+    if (existsSync(filePath)) {
+      const fileStream = createReadStream(filePath);
+      fileStream.pipe(res);
+    } else {
+      res.status(404).json({ message: 'Image not found' });
+    }
+  }
 }
