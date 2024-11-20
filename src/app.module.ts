@@ -10,7 +10,6 @@ import { EmailModule } from './email/email.module';
 import { RecipeModule } from './recipe/recipe.module';
 import { CategoryModule } from './category/category.module';
 import { ImageModule } from './image/image.module';
-import { join } from 'path';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({

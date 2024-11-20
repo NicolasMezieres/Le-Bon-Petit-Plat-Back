@@ -6,14 +6,16 @@ import {
   Post,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ImageService } from './image.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
-import { createReadStream, existsSync } from 'fs';
+import { createReadStream, existsSync, readdirSync } from 'fs';
 import { Response } from 'express';
+import { AdminGuard, JwtGuard } from 'src/auth/guards';
 
 @Controller('image')
 export class ImageController {
@@ -48,6 +50,17 @@ export class ImageController {
       fileStream.pipe(res);
     } else {
       res.status(404).json({ message: 'Image not found' });
+    }
+  }
+  @UseGuards(JwtGuard, AdminGuard)
+  @Get('/allFilename')
+  getAllFielname(@Res() res: Response) {
+    const filePath = readdirSync(join(__dirname, '..', '..', '..', 'uploads'));
+    const data = { filePath };
+    if (data) {
+      res.status(200).json(data);
+    } else {
+      res.status(404).json({ message: 'Aucun fichier trouvé' });
     }
   }
 }
