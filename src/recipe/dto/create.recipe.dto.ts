@@ -27,7 +27,7 @@ export class ingredient {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(3)
+  @MinLength(1)
   @MaxLength(50)
   ingredient: string;
 }

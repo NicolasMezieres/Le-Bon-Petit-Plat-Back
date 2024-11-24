@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { createRecipeDTO, ingredient, updateRecipeDTO } from './dto';
+import { createRecipeDTO, updateRecipeDTO } from './dto';
 import { userJWT } from 'utils/type';
 import { Role } from 'utils/const';
 
@@ -166,9 +166,6 @@ export class RecipeService {
             ],
           },
         ],
-      },
-      include: {
-        ingredient: true,
       },
     });
     const countRecype = await this.prisma.recipe.count({
@@ -384,9 +381,6 @@ export class RecipeService {
             },
           ],
         },
-        include: {
-          ingredient: true,
-        },
       }),
     };
   }
@@ -397,19 +391,19 @@ export class RecipeService {
         id: id,
       },
       include: {
+        category: true,
         ingredient: true,
       },
     });
     if (!existingRecipe) {
       throw new NotFoundException('Recette introuvable');
     }
-    const existingCommentary = await this.commentaryModel.find(
-      {
+    const existingCommentary = await this.commentaryModel
+      .find({
         idRecipe: existingRecipe.id,
-      },
-      [],
-      { sort: { createdAt: -1 } },
-    );
+      })
+      .sort({ createdAt: -1 });
+    console.log(existingCommentary);
     return { data: existingRecipe, commentary: existingCommentary };
   }
 
@@ -479,50 +473,70 @@ export class RecipeService {
     ) {
       throw new UnauthorizedException('Vous nêtes pas autorisé');
     }
-    if (dto.title) {
-      const existingTitle = await this.prisma.recipe.findUnique({
-        where: {
-          title: dto.title,
-        },
-      });
-      if (existingTitle && existingTitle.title !== dto.title) {
-        throw new ForbiddenException('Title always taken');
-      }
+
+    const existingTitle = await this.prisma.recipe.findUnique({
+      where: {
+        title: dto.title,
+      },
+    });
+    if (existingTitle && existingTitle.title !== dto.title) {
+      throw new ForbiddenException('Title always taken');
     }
 
-    const oldPathPicture = './uploads/' + existingRecipe.picture;
-    const newPathPicture = './uploads/' + dto.picture;
-    try {
-      fs.readFileSync(oldPathPicture);
-      fs.readFileSync(newPathPicture);
-    } catch (error) {
-      return error;
-    }
-    if (dto.nameCategory) {
-      const existingCategory = await this.prisma.category.findUnique({
-        where: {
-          name: dto.nameCategory,
-        },
-      });
-      if (!existingCategory) {
-        throw new NotFoundException('Category not found');
-      }
+    // const oldPathPicture = './uploads/' + existingRecipe.picture;
+    // const newPathPicture = './uploads/' + dto.picture;
+    // try {
+    //   fs.readFileSync(oldPathPicture);
+    //   fs.readFileSync(newPathPicture);
+    // } catch (error) {
+    //   return error;
+    // }
+    // try {
+    //   fs.readFileSync(newPathPicture);
+    // } catch (error) {
+    //   if (error) {
+    //     throw new NotFoundException('Not found picture');
+    //   }
+    // }
+
+    const existingCategory = await this.prisma.category.findUnique({
+      where: {
+        name: dto.nameCategory,
+      },
+    });
+    if (!existingCategory) {
+      throw new NotFoundException('Category not found');
     }
     await this.prisma.recipe.update({
       where: {
         id: id,
       },
       data: {
-        ...dto,
+        idCategory: existingCategory.id,
+        picture: dto.picture,
+        title: dto.title,
+        piece: dto.piece,
+        preparationTime: dto.preparationTime,
+        cookingTime: dto.cookingTime,
+        standingTime: dto.standingTime,
+        difficulty: dto.difficulty,
+        cookingStep: dto.cookingStep,
       },
     });
-    fs.unlink(oldPathPicture, (err) => {
-      if (err) {
-        throw new NotFoundException('Not found picture');
-      }
-      return `Deleted picture`;
+    await this.prisma.ingredient.deleteMany({
+      where: {
+        idRecipe: id,
+      },
     });
-    return 'Change successed';
+    const dataIngredient = [];
+    dto.ingredient.map((ingredient) => {
+      const ingredients = { ...ingredient, idRecipe: id };
+      dataIngredient.push(ingredients);
+    });
+    await this.prisma.ingredient.createMany({
+      data: dataIngredient,
+    });
+    return { message: 'Modification avec succès' };
   }
 
   async remove(id: string, user: userJWT) {
@@ -534,31 +548,26 @@ export class RecipeService {
     if (!existingRecipe) {
       throw new NotFoundException('Not found');
     }
-    console.log(existingRecipe);
+
     if (existingRecipe.idUser !== user.id && user.role.name !== Role.ADMIN) {
       throw new UnauthorizedException('You are not author of this recipe');
     }
+    await this.prisma.ingredient.deleteMany({ where: { idRecipe: id } });
     await this.commentaryModel.deleteMany({ idRecipe: id }).exec();
-    await this.commentaryModel.deleteMany({ idRecipe: id }).exec();
-    await this.prisma.ingredient.deleteMany({
-      where: {
-        idRecipe: id,
-      },
-    });
-    const pathPicture = './uploads/' + existingRecipe.picture;
-    console.log(pathPicture);
+    // const pathPicture = './uploads/' + existingRecipe.picture;
+    // console.log(pathPicture);
     await this.prisma.recipe.delete({
       where: {
         id: id,
       },
     });
-    fs.unlink(pathPicture, (err) => {
-      if (err) {
-        console.log(err);
-        throw new NotFoundException('Not found picture');
-      }
-      return `Deleted picture`;
-    });
-    return 'Successfully deleted';
+    // fs.unlink(pathPicture, (err) => {
+    //   if (err) {
+    //     console.log(err);
+    //     throw new NotFoundException('Not found picture');
+    //   }
+    //   return `Deleted picture`;
+    // });
+    return { message: 'Recette supprimé avec succès' };
   }
 }

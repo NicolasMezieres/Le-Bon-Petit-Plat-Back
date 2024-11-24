@@ -21,6 +21,7 @@ export class CommentaryService {
   ) {}
 
   async create(dto: createCommentaryDTO, user: User) {
+    console.log(dto);
     const existingRecipe = await this.prisma.recipe.findUnique({
       where: {
         id: dto.idRecipe,

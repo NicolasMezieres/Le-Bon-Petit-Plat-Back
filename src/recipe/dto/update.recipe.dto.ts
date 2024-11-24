@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsInt,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
@@ -51,14 +52,15 @@ export class updateRecipeDTO {
   @Max(3)
   difficulty: number;
 
-  @IsOptional()
+  @IsNotEmpty()
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => ingredient)
-  ingredient: {};
+  ingredient: ingredient[];
 
-  @IsOptional()
+  @IsNotEmpty()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => step)
-  cookingStep: {};
+  cookingStep: string[];
 }

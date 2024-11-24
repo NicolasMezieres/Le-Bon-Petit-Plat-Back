@@ -7,7 +7,7 @@ export class PrismaService extends PrismaClient {
   constructor(config: ConfigService) {
     super({
       datasources: {
-        postgresqlDB: {
+        db: {
           url: config.get('DATABASE_POSTGRESQL_URL'),
         },
       },

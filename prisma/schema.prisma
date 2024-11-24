@@ -2,30 +2,30 @@ generator client {
   provider = "prisma-client-js"
 }
 
-datasource postgresqlDB {
+datasource db {
   provider = "postgresql"
   url      = env("DATABASE_POSTGRESQL_URL")
 }
 
 model Role {
   id   String @id @default(uuid())
-  name String @unique
+  name String @unique @db.VarChar(50)
   user User[]
 }
 
 model User {
   id             String   @id @default(uuid())
   idRole         String
-  firstName      String
-  lastName       String
-  email          String   @unique
-  username       String   @unique
-  password       String
+  firstName      String   @db.VarChar(50)
+  lastName       String   @db.VarChar(50)
+  email          String   @unique @db.VarChar(255)
+  username       String   @unique @db.VarChar(50)
+  password       String   @db.VarChar(255)
   isActive       Boolean  @default(false)
   token          String?
   favoriteRecipe String[]
   createdAt      DateTime @default(now())
-  gdpr           DateTime 
+  gdpr           DateTime @default(now())
   updatedAt      DateTime @updatedAt
   role           Role     @relation(fields: [idRole], references: [id])
   recipe         Recipe[]

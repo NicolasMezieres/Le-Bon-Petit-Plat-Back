@@ -52,15 +52,4 @@ export class ImageController {
       res.status(404).json({ message: 'Image not found' });
     }
   }
-  @UseGuards(JwtGuard, AdminGuard)
-  @Get('/allFilename')
-  getAllFielname(@Res() res: Response) {
-    const filePath = readdirSync(join(__dirname, '..', '..', '..', 'uploads'));
-    const data = { filePath };
-    if (data) {
-      res.status(200).json(data);
-    } else {
-      res.status(404).json({ message: 'Aucun fichier trouvé' });
-    }
-  }
 }
